@@ -1,7 +1,22 @@
-FROM tomcat:10-jdk21
+FROM alpine:3.19 AS artifact
 
-WORKDIR /usr/local/tomcat/webapps
+WORKDIR /app
 
-COPY target/*.war ROOT.war
 
-EXPOSE 8080
+COPY target/*.war app.war
+
+
+
+FROM tomcat:9
+
+
+RUN rm -rf /usr/local/tomcat/webapps/*
+
+
+COPY --from=artifact /app/app.war /usr/local/tomcat/webapps/app.war
+
+
+EXPOSE 8085
+
+
+CMD ["catalina.sh", "run"]
